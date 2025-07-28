@@ -1,6 +1,7 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
 import json
 from app.core.settings import settings
+from app.core.logging import logger
 
 class NewsQueryService:
     def __init__(self, keywords, industries, companies):
@@ -22,7 +23,7 @@ class NewsQueryService:
         tool = next(t for t in tools if t.name == "get_finance_news")
 
         for query in self.queries:
-            print(f"\n [뉴스 검색]: {query}")
+            logger.info(f"\n [뉴스 검색]: {query}")
             try:
                 result = await tool.ainvoke({"query": query})
 
@@ -30,7 +31,7 @@ class NewsQueryService:
                     try:
                         result = json.loads(result)
                     except json.JSONDecodeError as e:
-                        print(f"[뉴스 JSON 파싱 실패] (쿼리: {query}): {e}")
+                        logger.error(f"[뉴스 JSON 파싱 실패] (쿼리: {query}): {e}")
                         continue
 
                 for item in result:
@@ -45,6 +46,6 @@ class NewsQueryService:
                         )
 
             except Exception as e:
-                print(f"[뉴스 mcp 연결 오류] (쿼리: {query}) → {e}")
+                logger.error(f"[뉴스 mcp 연결 오류] (쿼리: {query}) → {e}")
 
         return "\n\n".join(self.summaries)

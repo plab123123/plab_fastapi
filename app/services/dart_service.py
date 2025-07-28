@@ -1,5 +1,6 @@
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from app.core.settings import settings
+from app.core.logging import logger
 
 class DartService:
     def __init__(self, companies, bsns_year="2024", report_code="11014"):
@@ -41,7 +42,7 @@ class DartService:
                     )
                     fs_result[sj_div] = response
                 except Exception as e:
-                    print(f"[Dart 응답 에러] {c['company_name']} - {sj_div} 실패:", e)
+                    logger.error(f"[Dart 응답 에러] {c['company_name']} - {sj_div} 실패: {e}")
 
             results.append(
                 {
